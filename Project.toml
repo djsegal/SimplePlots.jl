@@ -1,0 +1,4 @@
+name = "SimplePlots"
+uuid = "307c2aad-90be-4152-b348-f51955fac6ce"
+authors = ["Dan Segal <dansegal2@gmail.com>"]
+version = "0.1.0"
