@@ -3,16 +3,14 @@
 
 ---
 
-To load use:
++ To load use:
 
 ```julia
 ] add https://github.com/djsegal/SimplePlots.jl
 using SimplePlots
 ```
 
----
-
-A simple test case is:
++ A simple test case is:
 
 ```julia
 scatter(
