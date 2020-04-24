@@ -1,13 +1,17 @@
 function _line!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; kwargs...)
   if length(varargs) == 1
-    cur_list = collect(first(varargs))
+    first_item = first(varargs)
+
+    if isa(first_item, Array)
+      cur_list = first_item
+    else
+      cur_list = collect(first_item)
+    end
   else
     cur_list = collect(varargs)
   end
 
-  custom_inf = 10000.0 #Float64(prevfloat(typemax(Float32)))
-
-  cur_dict = Dict{Any,Any}(
+  init_dict = Dict{Any,Any}(
     "x0" => 0,
     "x1" => 1,
     "y0" => 0,
@@ -15,6 +19,8 @@ function _line!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
   )
 
   for cur_entry in cur_list
+    cur_dict = deepcopy(init_dict)
+
     if cur_mode == "x"
       cur_dict["y0"] = string(cur_entry)
       cur_dict["y1"] = string(cur_entry)
@@ -73,8 +79,6 @@ function _line!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
 
     push!(simple_plot.layout["shapes"], cur_dict)
   end
-
-  println(simple_plot.layout["shapes"])
 
   deepcopy(simple_plot)
 end

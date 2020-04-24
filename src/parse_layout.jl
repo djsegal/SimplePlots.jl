@@ -29,7 +29,6 @@ function parse_layout(simple_plot::SimplePlot)
       tickvals = map(log10, tickvals)
     end
 
-    @show tickvals
     cur_layout["xaxis"]["tickvals"] = tickvals
     isnothing(ticktext) || ( cur_layout["xaxis"]["ticktext"] = ticktext )
   end
