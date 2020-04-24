@@ -13,6 +13,6 @@ module SimplePlots
   include("init.jl")
 
   include("text.jl")
-  include("plot.jl")
+  include("plots/index.jl")
 
 end

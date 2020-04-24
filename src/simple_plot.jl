@@ -45,6 +45,8 @@ function empty!(simple_plot::SimplePlot)
   simple_plot.layout["xaxis"]["type"] = "linear"
   simple_plot.layout["yaxis"]["type"] = "linear"
 
+  simple_plot.layout["shapes"] = []
+
   simple_plot
 end
 
