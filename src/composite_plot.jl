@@ -53,7 +53,13 @@ function show(io::IO, m::MIME"text/plain", composite_plot::CompositePlot)
       continue
     end
 
-    @assert composite_layout_base == cur_layout_base
+    for (cur_key, cur_value) in cur_layout_base
+      if haskey(composite_layout_base, cur_key)
+        @assert composite_layout_base[cur_key] == cur_value
+      else
+        composite_layout_base[cur_key] = cur_value
+      end
+    end
 
     isempty(cur_xaxis) || ( composite_layout_extra["xaxis$( cur_index )"] = cur_xaxis )
     isempty(cur_yaxis) || ( composite_layout_extra["yaxis$( cur_index )"] = cur_yaxis )
