@@ -28,3 +28,5 @@ plot!(cur_x, cur_y, label="Plot", color=1, title="Example")
 ylims!(0,1)
 xscale!(:log10)
 ```
+
+![Example Plot](example.png)
