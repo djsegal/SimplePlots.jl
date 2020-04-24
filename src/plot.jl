@@ -30,8 +30,15 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
   haskey(kwargs, :xscale) && xscale!(simple_plot, kwargs[:xscale])
   haskey(kwargs, :yscale) && yscale!(simple_plot, kwargs[:yscale])
 
-  haskey(kwargs, :xlims) && xlims!(simple_plot, kwargs[:xlims])
-  haskey(kwargs, :ylims) && ylims!(simple_plot, kwargs[:ylims])
+  tmp_lims = nothing
+  haskey(kwargs, :xlim) && ( tmp_lims = kwargs[:xlim] )
+  haskey(kwargs, :xlims) && ( tmp_lims = kwargs[:xlims] )
+  isnothing(tmp_lims) || xlims!(simple_plot, tmp_lims)
+
+  tmp_lims = nothing
+  haskey(kwargs, :ylim) && ( tmp_lims = kwargs[:ylim] )
+  haskey(kwargs, :ylims) && ( tmp_lims = kwargs[:ylims] )
+  isnothing(tmp_lims) || ylims!(simple_plot, tmp_lims)
 
   haskey(kwargs, :xticks) && xticks!(simple_plot, kwargs[:xticks])
   haskey(kwargs, :yticks) && yticks!(simple_plot, kwargs[:yticks])
