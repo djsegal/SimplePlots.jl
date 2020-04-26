@@ -50,7 +50,7 @@ function empty!(simple_plot::SimplePlot)
   simple_plot
 end
 
-function show(io::IO, mime::MIME, simple_plot::SimplePlot)
+function _show(simple_plot::SimplePlot)
   cur_plot_id = string(UUIDs.uuid4())
   cur_plot_div = "js-plot-" * string(cur_plot_id)
 
@@ -78,5 +78,13 @@ function show(io::IO, mime::MIME, simple_plot::SimplePlot)
     """
   )
 
-  show(io, mime, cur_html)
+  cur_html
+end
+
+function show(io::IO, mime::MIME"text/plain", simple_plot::SimplePlot)
+  display(_show(simple_plot))
+end
+
+function show(io::IO, mime::MIME, simple_plot::SimplePlot)
+  show(io, mime, _show(simple_plot))
 end
