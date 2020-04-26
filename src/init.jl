@@ -24,21 +24,35 @@ function _init_plotly()
 
   plotly_javascript = """
     <script type="text/javascript" class="js-plotly-script">
-      var plotlyScripts = document.getElementsByClassName("js-plotly-script");
+      function customBootPlotly(curCallback) {
+        if ( typeof Plotly !== "undefined" ) {
+          if ( typeof curCallback !== "undefined" ) {
+            curCallback();
+          }
+          return;
+        }
 
-      for (var i = 0; i < plotlyScripts.length; i++) {
-        var scriptParent = plotlyScripts[i].parentElement;
-        scriptParent.style.margin = "0";
-        scriptParent.style.padding = "0";
+        var plotlyScripts = document.getElementsByClassName("js-plotly-script");
+
+        for (var i = 0; i < plotlyScripts.length; i++) {
+          var scriptParent = plotlyScripts[i].parentElement;
+          scriptParent.style.margin = "0";
+          scriptParent.style.padding = "0";
+        }
+
+        require.config({
+          paths: { Plotly: "$(plotly_url)" }
+        });
+
+        require(["Plotly"], function(Plotly){
+          window.Plotly = Plotly;
+          if ( typeof curCallback !== "undefined" ) {
+            curCallback();
+          }
+        });
       }
 
-      require.config({
-        paths: { Plotly: "$(plotly_url)" }
-      });
-
-      require(["Plotly"], function(Plotly){
-        window.Plotly = Plotly;
-      });
+      customBootPlotly();
     </script>
   """
 

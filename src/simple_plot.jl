@@ -65,14 +65,19 @@ function show(io::IO, m::MIME"text/plain", simple_plot::SimplePlot)
       <div id="$(cur_plot_div)" style="width:$(simple_plot.size[1])px;height:$(simple_plot.size[2])px;"></div>
 
       <script>
-        plotDiv = document.getElementById('$(cur_plot_div)');
+        var anonFunc = function () {
+          plotDiv = document.getElementById('$(cur_plot_div)');
+          if ( plotDiv === null ) { return; }
 
-        Plotly.newPlot(
-          plotDiv,
-          $(JSON.json(simple_plot.data)),
-          $(JSON.json(cur_layout)),
-          $(JSON.json(simple_plot.config))
-        );
+          Plotly.newPlot(
+            plotDiv,
+            $(JSON.json(simple_plot.data)),
+            $(JSON.json(cur_layout)),
+            $(JSON.json(simple_plot.config))
+          );
+        }
+
+        customBootPlotly(anonFunc);
       </script>
     """
   ))
