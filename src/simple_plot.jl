@@ -50,17 +50,13 @@ function empty!(simple_plot::SimplePlot)
   simple_plot
 end
 
-function show(io::IO, simple_plot::SimplePlot)
-  @assert false
-end
-
-function show(io::IO, m::MIME"text/plain", simple_plot::SimplePlot)
+function show(io::IO, mime::MIME, simple_plot::SimplePlot)
   cur_plot_id = string(UUIDs.uuid4())
   cur_plot_div = "js-plot-" * string(cur_plot_id)
 
   cur_layout = parse_layout(simple_plot)
 
-  display(HTML(
+  cur_html = HTML(
     """
       <div id="$(cur_plot_div)" style="width:$(simple_plot.size[1])px;height:$(simple_plot.size[2])px;"></div>
 
@@ -80,5 +76,7 @@ function show(io::IO, m::MIME"text/plain", simple_plot::SimplePlot)
         customBootPlotly(anonFunc);
       </script>
     """
-  ))
+  )
+
+  show(io, mime, cur_html)
 end
