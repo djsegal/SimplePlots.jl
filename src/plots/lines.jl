@@ -1,10 +1,10 @@
 function hline(varargs...; kwargs...)
-  empty!(_plot)
+  reset_plot!(_plot; kwargs...)
   hline!(_plot, varargs...; kwargs...)
 end
 
 function vline(varargs...; kwargs...)
-  empty!(_plot)
+  reset_plot!(_plot; kwargs...)
   vline!(_plot, varargs...; kwargs...)
 end
 

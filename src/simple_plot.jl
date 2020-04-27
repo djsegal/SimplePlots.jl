@@ -1,6 +1,4 @@
-import Base: show, empty!
-
-mutable struct SimplePlot
+mutable struct SimplePlot <: AbstractPlot
   index::Int
   size::Tuple
   data::Vector{AbstractDict}
@@ -13,17 +11,23 @@ mutable struct SimplePlot
 end
 
 function SimplePlot(plot_size=(600, 400))
-  empty!(
+  reset_plot!(
     SimplePlot(
       0, plot_size, [],
       Dict(), Dict(),
       (), (), (), ()
-    )
+    ); figsize=plot_size
   )
 end
 
-function empty!(simple_plot::SimplePlot)
+function reset_plot!(simple_plot::SimplePlot; kwargs...)
   simple_plot.index = 0
+
+  if haskey(kwargs, :figsize)
+    simple_plot.size = kwargs[:figsize]
+  else
+    simple_plot.size = (600, 400)
+  end
 
   empty!(simple_plot.data)
   empty!(simple_plot.layout)
@@ -48,43 +52,4 @@ function empty!(simple_plot::SimplePlot)
   simple_plot.layout["shapes"] = []
 
   simple_plot
-end
-
-function _show(simple_plot::SimplePlot)
-  cur_plot_id = string(UUIDs.uuid4())
-  cur_plot_div = "js-plot-" * string(cur_plot_id)
-
-  cur_layout = parse_layout(simple_plot)
-
-  cur_html = HTML(
-    """
-      <div id="$(cur_plot_div)" style="width:$(simple_plot.size[1])px;height:$(simple_plot.size[2])px;"></div>
-
-      <script>
-        var anonFunc = function () {
-          plotDiv = document.getElementById('$(cur_plot_div)');
-          if ( plotDiv === null ) { return; }
-
-          Plotly.newPlot(
-            plotDiv,
-            $(JSON.json(simple_plot.data)),
-            $(JSON.json(cur_layout)),
-            $(JSON.json(simple_plot.config))
-          );
-        }
-
-        customBootPlotly(anonFunc);
-      </script>
-    """
-  )
-
-  cur_html
-end
-
-function show(io::IO, mime::MIME"text/plain", simple_plot::SimplePlot)
-  display(_show(simple_plot))
-end
-
-function show(io::IO, mime::MIME, simple_plot::SimplePlot)
-  show(io, mime, _show(simple_plot))
 end

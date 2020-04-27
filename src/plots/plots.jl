@@ -1,10 +1,10 @@
 function plot(varargs...; kwargs...)
-  empty!(_plot)
+  reset_plot!(_plot; kwargs...)
   plot!(_plot, varargs...; kwargs...)
 end
 
 function scatter(varargs...; kwargs...)
-  empty!(_plot)
+  reset_plot!(_plot; kwargs...)
   scatter!(_plot, varargs...; kwargs...)
 end
 
