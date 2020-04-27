@@ -8,15 +8,13 @@ function show(io::IO, mime::MIME, simple_plot::AbstractPlot)
   show(io, mime, _show(simple_plot))
 end
 
-function _show(simple_plot::SimplePlot)
+function _custom_show(cur_size, cur_data, cur_layout, cur_config)
   cur_plot_id = string(UUIDs.uuid4())
   cur_plot_div = "js-plot-" * string(cur_plot_id)
 
-  cur_layout = parse_layout(simple_plot)
-
   HTML(
     """
-      <div id="$(cur_plot_div)" style="width:$(simple_plot.size[1])px;height:$(simple_plot.size[2])px;"></div>
+      <div id="$(cur_plot_div)" style="width:$(cur_size[1])px;height:$(cur_size[2])px;"></div>
 
       <script>
         var anonFunc = function () {
@@ -25,9 +23,9 @@ function _show(simple_plot::SimplePlot)
 
           Plotly.newPlot(
             plotDiv,
-            $(JSON.json(simple_plot.data)),
+            $(JSON.json(cur_data)),
             $(JSON.json(cur_layout)),
-            $(JSON.json(simple_plot.config))
+            $(JSON.json(cur_config))
           );
         }
 
@@ -37,10 +35,18 @@ function _show(simple_plot::SimplePlot)
   )
 end
 
-function _show(io::IO, m::MIME"text/plain", composite_plot::CompositePlot)
-  cur_plot_id = string(UUIDs.uuid4())
-  cur_plot_div = "js-plot-" * string(cur_plot_id)
+function _show(simple_plot::SimplePlot)
+  simple_layout = parse_layout(simple_plot)
 
+  simple_data = simple_plot.data
+  simple_config = simple_plot.config
+
+  simple_size = simple_plot.size
+
+  _custom_show(simple_size, simple_data, simple_layout, simple_config)
+end
+
+function _show(composite_plot::CompositePlot)
   composite_config = nothing
   composite_data = []
 
@@ -125,20 +131,6 @@ function _show(io::IO, m::MIME"text/plain", composite_plot::CompositePlot)
     "pattern" => "independent"
   )
 
-  HTML(
-    """
-      <div id="$(cur_plot_div)" style="width:$(composite_plot.size[1])px;height:$(composite_plot.size[2])px;"></div>
-
-      <script>
-        plotDiv = document.getElementById('$(cur_plot_div)');
-
-        Plotly.newPlot(
-          plotDiv,
-          $(JSON.json(composite_data)),
-          $(JSON.json(composite_layout)),
-          $(JSON.json(composite_config))
-        );
-      </script>
-    """
-  )
+  composite_size = composite_plot.size
+  _custom_show(composite_size, composite_data, composite_layout, composite_config)
 end
