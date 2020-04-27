@@ -2,7 +2,7 @@ function annotate!(simple_plot::SimplePlot, x_position::Number, y_position::Numb
   cur_font = Dict()
 
   ( cur_text.font.family == "" ) || ( cur_font["family"] = cur_text.font.family )
-  isnothing( cur_text.font.color ) || ( cur_font["color"] = rgba_string(cur_text.font.color) )
+  isnothing( cur_text.font.color ) || ( cur_font["color"] = cur_text.font.color )
   ( cur_text.font.pointsize == -1 ) || ( cur_font["size"] = cur_text.font.pointsize )
 
   push!(

@@ -2,9 +2,6 @@ module SimplePlots
 
   using UUIDs
   using JSON
-  using PlotThemes
-  using PlotUtils
-  using Colors
 
   include("simple_plot.jl")
   include("parse_layout.jl")

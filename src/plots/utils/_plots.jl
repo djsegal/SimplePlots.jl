@@ -119,7 +119,7 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
   end
 
   cur_index = 1 + ( (cur_index-1) % length(_palette) )
-  cur_color = rgba_string(_palette[cur_index])
+  cur_color = _palette[cur_index]
 
   sub_dict = Dict()
   sub_dict["color"] = cur_color

@@ -4,7 +4,7 @@ mutable struct Font
   halign::Symbol
   valign::Symbol
   rotation::Float64
-  color::Union{Nothing,Colorant}
+  color::Union{Nothing,AbstractString}
 end
 
 """
@@ -17,7 +17,6 @@ arguments (which are distinguished by type/value) or as keyword arguments.
 - `halign`: Symbol. Horizontal alignment (:hcenter, :left, or :right)
 - `valign`: Symbol. Vertical aligment (:vcenter, :top, or :bottom)
 - `rotation`: Real. Angle of rotation for text in degrees (use a non-integer type)
-- `color`: Colorant or Symbol
 # Examples
 ```julia-repl
 julia> font(8)
@@ -51,12 +50,10 @@ function font(args...;kw...)
       halign = arg
     elseif arg in (:vcenter, :top, :bottom)
       valign = arg
-    elseif T <: Colorant
-      color = arg
     elseif T <: Symbol || T <: AbstractString
-      try
-        color = parse(Colorant, string(arg))
-      catch
+      if startswith(string(arg), "#")
+        color = string(arg)
+      else
         family = string(arg)
       end
     elseif typeof(arg) <: Integer
@@ -88,7 +85,7 @@ function font(args...;kw...)
     elseif symbol == :rotation
       rotation = kw[:rotation]
     elseif symbol == :color
-      color = parse(Colorant, kw[:color])
+      color = kw[:color]
     else
       @warn("Unused font kwarg: $symbol")
     end
