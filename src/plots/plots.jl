@@ -1,11 +1,11 @@
 function plot(varargs...; kwargs...)
-  reset_plot!(_plot; kwargs...)
-  plot!(_plot, varargs...; kwargs...)
+  simple_plot = SimplePlot(; kwargs...)
+  plot!(simple_plot, varargs...; kwargs...)
 end
 
 function scatter(varargs...; kwargs...)
-  reset_plot!(_plot; kwargs...)
-  scatter!(_plot, varargs...; kwargs...)
+  simple_plot = SimplePlot(; kwargs...)
+  scatter!(simple_plot, varargs...; kwargs...)
 end
 
 function plot!(simple_plot::SimplePlot, varargs...; kwargs...)

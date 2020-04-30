@@ -23,41 +23,32 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
   haskey(kwargs, :xticks) && xticks!(simple_plot, kwargs[:xticks])
   haskey(kwargs, :yticks) && yticks!(simple_plot, kwargs[:yticks])
 
-  iszero(vararg_count) && return _plot
-
-  if vararg_count == 1
-    cur_y = first(varargs)
-    cur_x = 1:length(cur_y)
-  else
-    cur_x = first(varargs)
-    cur_y = last(varargs)
-  end
-
-  cur_dict = Dict(
-    "x" => collect(cur_x),
-    "y" => collect(cur_y),
-    "mode" => cur_mode
-  )
-
-  if haskey(kwargs, :xerr)
-    cur_dict["error_x"] = Dict(
-      "type" => "data",
-      "array" => kwargs[:xerr]
-    )
-  end
-
-  if haskey(kwargs, :yerr)
-    cur_dict["error_y"] = Dict(
-      "type" => "data",
-      "array" => kwargs[:yerr]
-    )
-  end
-
   if haskey(kwargs, :legend)
-    if isa(kwargs[:legend], Bool)
-      simple_plot.layout["showlegend"] = kwargs[:legend]
+    cur_legend = kwargs[:legend]
+  elseif haskey(kwargs, :leg)
+    cur_legend = kwargs[:leg]
+  else
+    cur_legend = nothing
+  end
+
+  if !isnothing(cur_legend)
+    if isa(cur_legend, Bool)
+      simple_plot.layout["showlegend"] = cur_legend
+
+      delete!(simple_plot.layout["legend"], "xanchor")
+      delete!(simple_plot.layout["legend"], "yanchor")
+
+      delete!(simple_plot.layout["legend"], "x")
+      delete!(simple_plot.layout["legend"], "y")
+
+      delete!(simple_plot.layout["legend"], "bordercolor")
+      delete!(simple_plot.layout["legend"], "borderwidth")
     else
-      legend_position = kwargs[:legend]
+      @assert !is_repl "No legend placement in REPL"
+
+      simple_plot.layout["showlegend"] = true
+
+      legend_position = cur_legend
 
       if isa(legend_position, Symbol)
         legend_position = string(legend_position)
@@ -91,6 +82,36 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
 
       @assert !isnothing(found_anchor)
     end
+  end
+
+  iszero(vararg_count) && return _plot
+
+  if vararg_count == 1
+    cur_y = first(varargs)
+    cur_x = 1:length(cur_y)
+  else
+    cur_x = first(varargs)
+    cur_y = last(varargs)
+  end
+
+  cur_dict = Dict(
+    "x" => collect(cur_x),
+    "y" => collect(cur_y),
+    "mode" => cur_mode
+  )
+
+  if haskey(kwargs, :xerr)
+    cur_dict["error_x"] = Dict(
+      "type" => "data",
+      "array" => collect(kwargs[:xerr])
+    )
+  end
+
+  if haskey(kwargs, :yerr)
+    cur_dict["error_y"] = Dict(
+      "type" => "data",
+      "array" => collect(kwargs[:yerr])
+    )
   end
 
   cur_label = nothing

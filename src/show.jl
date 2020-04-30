@@ -8,33 +8,6 @@ function show(io::IO, mime::MIME, simple_plot::AbstractPlot)
   show(io, mime, _show(simple_plot))
 end
 
-function _custom_show(cur_size, cur_data, cur_layout, cur_config)
-  cur_plot_id = string(UUIDs.uuid4())
-  cur_plot_div = "js-plot-" * string(cur_plot_id)
-
-  HTML(
-    """
-      <div id="$(cur_plot_div)" style="width:$(cur_size[1])px;height:$(cur_size[2])px;"></div>
-
-      <script>
-        var anonFunc = function () {
-          plotDiv = document.getElementById('$(cur_plot_div)');
-          if ( plotDiv === null ) { return; }
-
-          Plotly.newPlot(
-            plotDiv,
-            $(JSON.json(cur_data)),
-            $(JSON.json(cur_layout)),
-            $(JSON.json(cur_config))
-          );
-        }
-
-        customBootPlotly(anonFunc);
-      </script>
-    """
-  )
-end
-
 function _show(simple_plot::SimplePlot)
   simple_layout = parse_layout(simple_plot)
 
@@ -43,7 +16,7 @@ function _show(simple_plot::SimplePlot)
 
   simple_size = simple_plot.size
 
-  _custom_show(simple_size, simple_data, simple_layout, simple_config)
+  render(simple_size, simple_data, simple_layout, simple_config)
 end
 
 function _show(composite_plot::CompositePlot)
@@ -132,5 +105,5 @@ function _show(composite_plot::CompositePlot)
   )
 
   composite_size = composite_plot.size
-  _custom_show(composite_size, composite_data, composite_layout, composite_config)
+  render(composite_size, composite_data, composite_layout, composite_config)
 end

@@ -10,28 +10,18 @@ mutable struct SimplePlot <: AbstractPlot
   yticks::Tuple
 end
 
-function SimplePlot(plot_size=(600, 400))
-  reset_plot!(
-    SimplePlot(
-      0, plot_size, [],
-      Dict(), Dict(),
-      (), (), (), ()
-    ); figsize=plot_size
-  )
-end
-
-function reset_plot!(simple_plot::SimplePlot; kwargs...)
-  simple_plot.index = 0
-
+function SimplePlot(; kwargs...)
   if haskey(kwargs, :figsize)
-    simple_plot.size = kwargs[:figsize]
+    plot_size = kwargs[:figsize]
   else
-    simple_plot.size = (600, 400)
+    plot_size = default_plot_size
   end
 
-  empty!(simple_plot.data)
-  empty!(simple_plot.layout)
-  empty!(simple_plot.config)
+  simple_plot = SimplePlot(
+    0, plot_size, [],
+    Dict(), Dict(),
+    (), (), (), ()
+  )
 
   simple_plot.config["responsive"] = true
 
@@ -50,6 +40,8 @@ function reset_plot!(simple_plot::SimplePlot; kwargs...)
   simple_plot.layout["yaxis"]["type"] = "linear"
 
   simple_plot.layout["shapes"] = []
+
+  global _plot = simple_plot
 
   simple_plot
 end

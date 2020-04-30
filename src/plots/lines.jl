@@ -1,11 +1,11 @@
 function hline(varargs...; kwargs...)
-  reset_plot!(_plot; kwargs...)
-  hline!(_plot, varargs...; kwargs...)
+  simple_plot = SimplePlot(; kwargs...)
+  hline!(simple_plot, varargs...; kwargs...)
 end
 
 function vline(varargs...; kwargs...)
-  reset_plot!(_plot; kwargs...)
-  vline!(_plot, varargs...; kwargs...)
+  simple_plot = SimplePlot(; kwargs...)
+  vline!(simple_plot, varargs...; kwargs...)
 end
 
 function hline!(simple_plot::SimplePlot, varargs...; kwargs...)

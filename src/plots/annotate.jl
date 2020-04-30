@@ -11,8 +11,8 @@ function annotate!(simple_plot::SimplePlot, x_position::Number, y_position::Numb
       "text" => cur_text.str,
       "textangle" => cur_text.font.rotation,
       "showarrow" => false,
-      "x" => x_position,
-      "y" => y_position,
+      "x" => collect(x_position),
+      "y" => collect(y_position),
       "align" => cur_text.font.halign,
       "valign" => cur_text.font.valign,
       "font" => cur_font
