@@ -90,8 +90,6 @@ function render_unicode(cur_size, cur_data, cur_layout, cur_config)
 end
 
 function _configure_repl_layout(cur_size, cur_data, work_layout)
-  println(404)
-
   size_x, size_y = cur_size
 
   has_legend = work_layout["showlegend"]
