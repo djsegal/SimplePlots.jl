@@ -1,0 +1,225 @@
+/* all widgets */
+
+.cs-hidden {
+  display: none;
+}
+
+.cs-widget {
+  display: flex;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  min-height: 4rem;
+}
+
+.cs-widget > * {
+  margin-top: auto;
+  margin-bottom: auto;
+  user-select: none;
+  text-decoration-style: none;
+}
+
+.noUi-connect{
+  background-color: #6875f5;
+  color: #6875f5;
+}
+
+.cs-widget-slider {
+  width: 50%;
+}
+
+.cs-widget-label {
+  min-width: 10%;
+  text-align: center;
+}
+
+.cs-widget-value {
+  min-width: 20%;
+  text-align: center;
+}
+
+/* toggle buttons */
+
+.cs-button.cs-active {
+  font-weight: 700;
+  background-color: #e5edff;
+  color: #5145cd;
+  border-color: #6875f5;
+  cursor: default;
+}
+
+.cs-button:not(.cs-active) {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 400;
+  border-color: #d2d6dc;
+}
+
+.cs-button:not(.cs-active):hover {
+  background-color: #6875f5;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.cs-button-group .cs-button:not(.cs-pre-active) {
+  border-right-width: 1px;
+}
+
+.cs-button-group .cs-button.cs-pre-active {
+  border-right-width: 0;
+}
+
+.cs-button-group .cs-button.cs-active {
+  border-left-width: 1px;
+}
+
+.cs-button-group .cs-button:not(.cs-active):not(:first-child) {
+  border-left-width: 0;
+}
+
+.cs-button {
+  min-width: 7.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 2.25rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  border-color: #9fa6b2;
+  border-style: solid;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  cursor: pointer;
+}
+
+.cs-button-group .cs-button {
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
+.cs-button-group .cs-button:first-child {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  border-left-width: 1px;
+}
+
+.cs-button-group .cs-button:last-child {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+/* dropdown inputs */
+
+.cs-dropdown-container {
+  position: relative;
+}
+
+.cs-dropdown, .cs-dropdown * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+.cs-dropdown *:before,
+.cs-dropdown *:after {
+    content: "";
+    display: table;
+}
+
+.cs-dropdown *:after {
+    clear: both;
+}
+
+.float-right {
+  float: right;
+}
+
+.cs-dropdown {
+  display: inline-block;
+}
+
+.cs-dropdown label, .cs-dropdown ul li {
+  display: block;
+  width: 200px;
+  background: #E5E7EB;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.cs-dropdown label:hover, .cs-dropdown ul li:hover {
+  cursor: pointer;
+}
+
+.cs-dropdown label:hover {
+  background: #5850EC;
+  color: white;
+}
+
+.cs-dropdown ul li:hover {
+  border-left: 4px solid #5145CD;
+  background-color: #D2D6DC;
+}
+
+.cs-dropdown ul li {
+  border-left: 4px solid transparent;
+}
+
+.cs-dropdown label {
+  color: #5850EC;
+  border-left: 4px solid #5850EC;
+  border-radius: 0 5px 0 0;
+  position: relative;
+  z-index: 1000;
+}
+
+.cs-dropdown input {
+  display: none;
+}
+
+.cs-dropdown input ~ ul {
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1500;
+  top: 0rem;
+}
+
+.cs-dropdown input:not(:checked) ~ ul {
+  pointer-events: none;
+}
+
+.cs-dropdown input:checked + label {
+  background: #5850EC;
+  color: white;
+  z-index: 10000;
+}
+
+.cs-dropdown input + label {
+  z-index: 1000;
+}
+
+
+.cs-dropdown input:checked ~ ul {
+  visibility: visible;
+  opacity: 1;
+  top: 4.5rem;
+}
+
+.cs-dropdown * {
+  -webkit-transition: all .3s;
+  -moz-transition: all .3s;
+  -ms-transition: all .3s;
+  -ms-transition: all .3s;
+  transition: all .3s;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Chrome and Safari */
+  -moz-backface-visibility: hidden;
+  /* Firefox */
+  -ms-backface-visibility: hidden;
+  /* Internet Explorer */
+}

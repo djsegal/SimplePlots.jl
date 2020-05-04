@@ -43,12 +43,21 @@ function __init__()
 end
 
 function _init_notebook()
+  assets_url = "https://cdn.jsdelivr.net/gh/djsegal/SimplePlots.jl/dist/"
+
   plotly_url = "https://cdn.plot.ly/plotly-"
   plotly_url *= "$(plotly_version).min"
 
   plotly_javascript = """
     <script type="text/javascript" class="js-plotly-script">
       function customPlotLoader(curCallback) {
+
+        if ( \$(".js-custom-css").length == 0 ) {
+          \$("head").append(
+            '<link class="js-custom-css" href="$( assets_url * "custom.min.css" )" rel="stylesheet">'
+          );
+        }
+
         if ( typeof Plotly !== "undefined" ) {
           if ( typeof curCallback !== "undefined" ) {
             curCallback();
