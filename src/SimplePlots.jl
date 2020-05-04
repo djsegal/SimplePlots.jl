@@ -4,6 +4,9 @@ module SimplePlots
   using JSON
 
   using Printf
+  using DataStructures
+
+  using IJulia.CommManager
 
   abstract type AbstractPlot end
 
@@ -17,6 +20,8 @@ module SimplePlots
   include("parse_layout.jl")
 
   include("plots/index.jl")
+  include("interact/index.jl")
+
   include("init.jl")
 
 end

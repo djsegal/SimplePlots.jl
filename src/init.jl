@@ -50,7 +50,16 @@ function _init_notebook()
 
   plotly_javascript = """
     <script type="text/javascript" class="js-plotly-script">
+      \$(".js-plotly-script").parent().css('padding', 0);
+
+      interactComms = {};
+
       function customPlotLoader(curCallback) {
+        if ( \$(".js-nouislider-css").length == 0 ) {
+          \$("head").append(
+            '<link class="js-nouislider-css" href="$( assets_url * "nouislider.min.css" )" rel="stylesheet">'
+          );
+        }
 
         if ( \$(".js-custom-css").length == 0 ) {
           \$("head").append(
@@ -74,17 +83,25 @@ function _init_notebook()
         }
 
         require.config({
-          paths: { Plotly: "$(plotly_url)" }
+          paths: {
+            Plotly: "$( plotly_url )",
+            noUiSlider: "$( assets_url * "nouislider.min" )",
+            wNumb: "$( assets_url * "wnumb.min" )"
+          }
         });
 
-        require(["Plotly"], function(Plotly){
+        require(["Plotly", "noUiSlider", "wNumb"], function(Plotly, noUiSlider, wNumb){
           window.Plotly = Plotly;
+          window.noUiSlider = noUiSlider;
+          window.wNumb = wNumb;
+
           if ( typeof curCallback !== "undefined" ) {
             curCallback();
           }
 
           \$("head").append(\$(".js-plotly-script"));
           \$("head .js-plotly-script:not(:first)").remove();
+          \$("body .js-plotly-script").remove();
         });
       }
 

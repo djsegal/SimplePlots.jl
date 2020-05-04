@@ -1,14 +1,16 @@
 import Base: show
 
-function show(io::IO, mime::MIME"text/plain", simple_plot::AbstractPlot)
-  display(_show(simple_plot))
+function show(io::IO, mime::MIME"text/plain", cur_plot::AbstractPlot)
+  display(_show(cur_plot))
 end
 
-function show(io::IO, mime::MIME, simple_plot::AbstractPlot)
-  show(io, mime, _show(simple_plot))
+function show(io::IO, mime::MIME, cur_plot::AbstractPlot)
+  show(io, mime, _show(cur_plot))
 end
 
 function _show(simple_plot::SimplePlot)
+  global _plot = simple_plot
+
   simple_layout = parse_layout(simple_plot)
 
   simple_data = simple_plot.data
