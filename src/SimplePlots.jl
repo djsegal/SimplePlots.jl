@@ -7,6 +7,7 @@ module SimplePlots
   using DataStructures
 
   using IJulia.CommManager
+  using Observables
 
   abstract type AbstractPlot end
 

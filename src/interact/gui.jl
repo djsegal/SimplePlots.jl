@@ -1,4 +1,17 @@
+struct GUI
+  id::UUID
+  widgets::Vector{Widget}
+  expression::Expr
+end
+
 macro gui(expr)
+  quote
+    @_gui $(expr)
+    nothing
+  end
+end
+
+macro _gui(expr)
   if expr.head != :for
     error(
       "@gui syntax is @gui for ",
@@ -21,11 +34,11 @@ macro gui(expr)
     cur_symbol, cur_range = cur_binding.args
 
     if isa(cur_range, Expr)
-      cur_range = Base.eval(cur_range)
+      cur_range = @eval $(cur_range)
     elseif isa(cur_range, Bool)
       cur_range = [cur_range, !cur_range]
     elseif isa(cur_range, Symbol)
-      cur_range = Base.eval(cur_range)
+      cur_range = @eval $(cur_range)
     else
       @assert isa(cur_range, Widget)
     end
@@ -38,6 +51,7 @@ macro gui(expr)
 
   cur_script = """
     <script>
+      var anonFunc = function () {
   """
 
   cur_html = """
@@ -118,22 +132,22 @@ macro gui(expr)
         });
 
         \$("#$(work_id)").parent().children("ul").children("li").click(function (curEvent) {
-          newValue = curEvent.target.innerText;
+          var newValue = curEvent.target.innerText;
           \$(curEvent.target).closest(".cs-dropdown").children("label").text(newValue);
 
-          tmpRange = $( json(strip.(string.(cur_widget.range))) );
-          tmpIndex = tmpRange.indexOf(newValue);
+          var tmpRange = $( json(strip.(string.(cur_widget.range))) );
+          var tmpIndex = tmpRange.indexOf(newValue);
 
           if ( tmpIndex < 0 ) { alert("Unable to find dropdown label!"); }
           tmpRange.splice(tmpIndex, 1);
 
-          curItems = \$(curEvent.target).closest(".cs-dropdown").children("ul").children("li");
+          var curItems = \$(curEvent.target).closest(".cs-dropdown").children("ul").children("li");
 
           \$.each(curItems, function(workIndex, workValue) {
             workValue.innerText = tmpRange[workIndex];
           });
 
-          tmpSpan = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
+          var tmpSpan = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
           tmpSpan.innerText = newValue;
 
           \$("#js-interact__$( string(cur_id) )").trigger("interact");
@@ -153,22 +167,8 @@ macro gui(expr)
 
   cur_html *= """
       </div>
+
       <div class='js-display'>
-  """
-
-  tmp_block = deepcopy(cur_block)
-  for cur_widget in cur_widgets
-    work_block = :(
-      $(Symbol(cur_widget.label)) = $( cur_widget.range[ cur_widget.index ] )
-    )
-
-    insert!(tmp_block.args, 2, work_block)
-  end
-  eval(tmp_block)
-
-  cur_html *= _show(_plot).content
-
-  cur_html *= """
       </div>
     </div>
   """
@@ -200,10 +200,10 @@ macro gui(expr)
 
         var that = this;
         this.noUiSlider.on('update', function (values, handle) {
-          tmpRange = $( map(string,cur_widget.range) );
-          newValue = tmpRange[values[handle]];
+          var tmpRange = $( map(string,cur_widget.range) );
+          var newValue = tmpRange[values[handle]];
 
-          tmpSpan = \$(that.parentElement).children(".js-widget-value")[0];
+          var tmpSpan = \$(that.parentElement).children(".js-widget-value")[0];
           tmpSpan.innerText = newValue;
 
           \$("#js-interact__$( string(cur_id) )").trigger("interact");
@@ -214,45 +214,30 @@ macro gui(expr)
   end
 
   cur_script *= """
-      \$(".js-widget-toggle .cs-button").click(function (curEvent) {
-        if ( !\$(curEvent.target).hasClass("cs-active") ) {
-          var curItems = \$(curEvent.target.parentElement).children(".cs-button");
-          var curIndex = curItems.index(curEvent.target);
+    \$(".js-widget-toggle .cs-button").click(function (curEvent) {
+      if ( !\$(curEvent.target).hasClass("cs-active") ) {
+        var curItems = \$(curEvent.target.parentElement).children(".cs-button");
+        var curIndex = curItems.index(curEvent.target);
 
-          \$.each(curItems, function(workIndex, workValue) {
-            var otherTarget = \$(curEvent.target.parentElement.children[workIndex]);
+        \$.each(curItems, function(workIndex, workValue) {
+          var otherTarget = \$(curEvent.target.parentElement.children[workIndex]);
 
-            otherTarget.removeClass("cs-active");
-            otherTarget.removeClass("cs-pre-active");
+          otherTarget.removeClass("cs-active");
+          otherTarget.removeClass("cs-pre-active");
 
-            if ( workIndex == curIndex ) { otherTarget.addClass("cs-active"); }
-            if ( workIndex == curIndex - 1 ) { otherTarget.addClass("cs-pre-active"); }
-          });
+          if ( workIndex == curIndex ) { otherTarget.addClass("cs-active"); }
+          if ( workIndex == curIndex - 1 ) { otherTarget.addClass("cs-pre-active"); }
+        });
 
-          var curWidgetVal = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
-          curWidgetVal.innerText = curEvent.target.innerText;
+        var curWidgetVal = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
+        curWidgetVal.innerText = curEvent.target.innerText;
 
-          \$("#js-interact__$( string(cur_id) )").trigger("interact");
-        }
-      });
+        \$("#js-interact__$( string(cur_id) )").trigger("interact");
+      }
+    });
   """
 
   comm_id = "interact-$( string(cur_id) )"
-
-  cur_script *= """
-    curComm = IPython.notebook.kernel.comm_manager.register_target("$(comm_id)", function (comm, msg) {
-      interactComms["$(comm_id)"] = comm;
-
-      comm.on_msg(function(msg) {
-        var tmpPlot = \$("#js-interact__$( string(cur_id) ) .js-plotly-plot")[0];
-
-        Plotly.purge(tmpPlot);
-        Plotly.plot(tmpPlot, msg.content.data.plot);
-      });
-
-      comm.on_close(function(msg) { console.log("Julia close message: " + msg); });
-    })
-  """
 
   cur_script *= """
     \$("#js-interact__$( string(cur_id) )").on("interact", function() {
@@ -265,35 +250,169 @@ macro gui(expr)
       }).get();
 
       var msgDict = msgLabels.reduce((obj, k, i) => ({...obj, [k]: msgValues[i] }), {});
-      interactComms["$(comm_id)"].send(msgDict);
+
+      var workPlotlyId = \$("#js-interact__$( string(cur_id) ) .js-plotly-plot").attr("id");
+      msgDict["___interact_plot_id___"] = workPlotlyId;
+
+      if ( "$(comm_id)" in demoData ) {
+        tmpData = demoData["$(comm_id)"];
+  """
+
+  for cur_widget in cur_widgets
+    cur_script *= """
+      tmpData = tmpData[msgDict["$(cur_widget.label)"]];
+    """
+  end
+
+  cur_script *= """
+        var workPlot = \$("#js-interact__$( string(cur_id) ) .js-plotly-plot")[0];
+        var workJson = tmpData;
+
+        if ( typeof workPlot === "undefined" ) {
+          var tmpDisplay = \$("#js-interact__$( string(cur_id) ) .js-display");
+          var tmpPlotId = "$("js-plot-" * string(UUIDs.uuid4()))";
+          tmpDisplay.html('<div id="' + tmpPlotId + '" style="width:$(default_plot_size[1])px;height:$(default_plot_size[2])px;"></div>');
+
+          plotDiv = document.getElementById(tmpPlotId);
+          Plotly.newPlot(plotDiv, workJson.data, workJson.layout, workJson.config);
+        } else {
+          Plotly.react(workPlot, workJson.data, workJson.layout, workJson.config);
+        }
+      } else {
+        if ( "$(comm_id)" in globalComms ) {
+          globalComms["$(comm_id)"].send(msgDict);
+        } else {
+          alert("Unable to startup GUI!")
+        }
+      }
     });
   """
 
   cur_script *= """
+      }
+
+      customPlotLoader(anonFunc);
     </script>
   """
 
   display(HTML(cur_html * cur_script))
 
-  cur_comm = Comm(Symbol(comm_id))
+  cur_anon_func = function (cur_comm::Comm, cur_message, cur_module::Module)
 
-  cur_comm.on_msg = function (cur_message)
     tmp_block = deepcopy(cur_block)
+
     for (cur_key, cur_value) in cur_message.content["data"]
+      ( cur_key == "___interact_plot_id___" ) && continue
+
+      cur_widget = cur_widgets[findfirst(tmp_widget -> tmp_widget.label == cur_key, cur_widgets)]
+
+      if cur_widget.datatype <: AbstractString
+        parsed_value = cur_value
+      else
+        parsed_value = parse(cur_widget.datatype, cur_value)
+      end
+
       work_block = :(
-        $(Symbol(cur_key)) = $( cur_value )
+        $(Symbol(cur_key)) = $( parsed_value )
       )
 
       insert!(tmp_block.args, 2, work_block)
     end
 
-    eval(tmp_block)
-    cur_json = custom_json(_plot)
+    SimplePlot()
 
-    send_comm(cur_comm, Dict("plot" => cur_json))
+    cur_output = Base.eval(cur_module, tmp_block)
+    shown_plot = isa(cur_output, SimplePlot) ? cur_output : _plot
+
+    if "___interact_plot_id___" in keys(cur_message.content["data"])
+      plot_json = custom_json(shown_plot)
+      cur_size, cur_data, cur_layout, cur_config = _show_helper(shown_plot)
+
+      # cur_size is currently unused in update call
+
+      plot_script = _render_html_script(
+        cur_message.content["data"]["___interact_plot_id___"], cur_data, cur_layout, cur_config
+      )
+
+      send_comm(cur_comm, Dict("json" => Dict("plot" => plot_json, "script" => plot_script)))
+    else
+      plot_html = _show(shown_plot).content
+      send_comm(cur_comm, Dict("html" => plot_html))
+    end
+
   end
 
-  return
+  cur_gui = GUI(cur_id, cur_widgets, cur_block)
+
+  return quote
+    comm_observer = Observable(0)
+
+    cur_watcher = on(comm_observer) do cur_value
+      cur_comm = Comm(Symbol($(comm_id)))
+
+      cur_comm.on_msg = function (cur_message)
+        $(cur_anon_func)(cur_comm, cur_message, @__MODULE__)
+      end
+    end
+
+    $(interact_comms)[$(comm_id)] = comm_observer
+
+    display(MIME("text/javascript"), """
+
+      var _guiBootup = function (curCallback) {
+        Jupyter.notebook.kernel.comm_manager.unregister_target("$($(comm_id))")
+        Jupyter.notebook.kernel.comm_manager.register_target("$($(comm_id))", function (comm, msg) {
+          globalComms["$($(comm_id))"] = comm;
+
+          comm.on_msg(function(msg) {
+            if ( "json" in msg.content.data ) {
+              var workPlot = \$("#js-interact__$( string($(cur_id)) ) .js-plotly-plot")[0];
+              if ( typeof workPlot === "undefined" ) { alert("Could not find plotly plot!"); }
+
+              var workJson = msg.content.data.json.plot;
+              Plotly.react(workPlot, workJson.data, workJson.layout, workJson.config);
+
+              \$("#js-interact__$( string($(cur_id)) ) .js-new-plot-script").replaceWith(msg.content.data.json.script);
+            } else {
+              if ( "html" in msg.content.data ) {
+                var tmpDisplay = \$("#js-interact__$( string($(cur_id)) ) .js-display");
+                tmpDisplay.html(msg.content.data.html);
+              } else {
+                alert("Unrecognized interact content type!");
+              }
+            }
+          });
+
+          comm.on_close(function(msg) { console.log("Julia close message: " + msg); });
+          \$("#js-interact__$( string($(cur_id)) )").trigger("interact");
+        })
+
+        Jupyter.notebook.kernel.execute('$(string(@__MODULE__)).SimplePlots.interact_comms["$($(comm_id))"][] += 1')
+        if ( typeof curCallback !== "undefined" ) { curCallback(); }
+      }
+
+      if ( typeof Jupyter === "undefined" ) {
+        customPlotLoader(function() {
+          \$("#js-interact__$( string($(cur_id)) )").trigger("interact");
+        });
+      } else {
+        if (Jupyter.notebook.kernel) {
+          _guiBootup()
+        } else {
+          Jupyter.notebook.events.one('kernel_ready.Kernel', (e) => {
+            _guiBootup(function() {
+              customPlotLoader(function() {
+                \$("#js-interact__$( string($(cur_id)) )").trigger("interact");
+              });
+            });
+          });
+        }
+      }
+
+    """)
+
+    $(cur_gui)
+  end
 
 end
 
