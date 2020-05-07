@@ -3,11 +3,11 @@ struct Widget
   index::Int
   label::AbstractString
   type::AbstractString
+  datatype::DataType
 end
 
 function widget(input_range; value=nothing, label::AbstractString="", type::AbstractString="")
   isa(input_range, Widget) && return input_range
-
   @assert label != ""
 
   cur_range = collect(input_range)
@@ -24,6 +24,9 @@ function widget(input_range; value=nothing, label::AbstractString="", type::Abst
     end
   end
 
+  @assert isa(cur_range, Array)
+  datatype = eltype(cur_range)
+
   if isnothing(value)
     if all(isa.(cur_range, Number))
       cur_index = Int(ceil( length(cur_range) // 2 ))
@@ -37,7 +40,7 @@ function widget(input_range; value=nothing, label::AbstractString="", type::Abst
     cur_index = all_indices[1]
   end
 
-  Widget(cur_range, cur_index, label, type)
+  Widget(cur_range, cur_index, label, type, datatype)
 end
 
 slider = widget
