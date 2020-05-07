@@ -1,6 +1,11 @@
 ### SimplePlots.jl
 ##### Plots made Simple
 
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://djsegal.github.io/SimplePlots.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://djsegal.github.io/SimplePlots.jl/dev)
+[![Build Status](https://travis-ci.com/djsegal/SimplePlots.jl.svg?branch=master)](https://travis-ci.com/djsegal/SimplePlots.jl)
+[![Codecov](https://codecov.io/gh/djsegal/SimplePlots.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/djsegal/SimplePlots.jl)
+
 ---
 
 + To load use:
