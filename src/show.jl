@@ -8,7 +8,12 @@ function show(io::IO, mime::MIME, cur_plot::AbstractPlot)
   show(io, mime, _show(cur_plot))
 end
 
-function _show(simple_plot::SimplePlot)
+function _show(cur_plot::AbstractPlot)
+  cur_size, cur_data, cur_layout, cur_config = _show_helper(cur_plot)
+  render(cur_size, cur_data, cur_layout, cur_config)
+end
+
+function _show_helper(simple_plot::SimplePlot)
   global _plot = simple_plot
 
   simple_layout = parse_layout(simple_plot)
@@ -18,10 +23,12 @@ function _show(simple_plot::SimplePlot)
 
   simple_size = simple_plot.size
 
-  render(simple_size, simple_data, simple_layout, simple_config)
+  return (
+    simple_size, simple_data, simple_layout, simple_config
+  )
 end
 
-function _show(composite_plot::CompositePlot)
+function _show_helper(composite_plot::CompositePlot)
   composite_config = nothing
   composite_data = []
 
@@ -107,5 +114,8 @@ function _show(composite_plot::CompositePlot)
   )
 
   composite_size = composite_plot.size
-  render(composite_size, composite_data, composite_layout, composite_config)
+
+  return (
+    composite_size, composite_data, composite_layout, composite_config
+  )
 end
