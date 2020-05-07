@@ -100,32 +100,6 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
     "mode" => cur_mode
   )
 
-  if haskey(kwargs, :xerr)
-    cur_dict["error_x"] = Dict(
-      "type" => "data",
-      "array" => collect(kwargs[:xerr])
-    )
-  end
-
-  if haskey(kwargs, :yerr)
-    cur_dict["error_y"] = Dict(
-      "type" => "data",
-      "array" => collect(kwargs[:yerr])
-    )
-  end
-
-  cur_label = nothing
-  haskey(kwargs, :name) && ( cur_label = kwargs[:name] )
-  haskey(kwargs, :label) && ( cur_label = kwargs[:label] )
-
-  if !isnothing(cur_label)
-    if strip(cur_label) == ""
-      cur_dict["showlegend"] = false
-    else
-      cur_dict["name"] = cur_label
-    end
-  end
-
   cur_alpha = nothing
   haskey(kwargs, :alpha) && ( cur_alpha = kwargs[:alpha] )
   haskey(kwargs, :opacity) && ( cur_alpha = kwargs[:opacity] )
@@ -141,6 +115,40 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
 
   cur_index = 1 + ( (cur_index-1) % length(_palette) )
   cur_color = _palette[cur_index]
+
+  if haskey(kwargs, :xerr)
+    cur_dict["error_x"] = Dict(
+      "type" => "data",
+      "array" => collect(kwargs[:xerr]),
+      "opacity" => haskey(kwargs, :fillalpha) ? kwargs[:fillalpha] : (cur_alpha/2),
+      "color" => cur_color,
+      "width" => 0,
+      "thickness" => 2
+    )
+  end
+
+  if haskey(kwargs, :yerr)
+    cur_dict["error_y"] = Dict(
+      "type" => "data",
+      "array" => collect(kwargs[:yerr]),
+      "opacity" => haskey(kwargs, :fillalpha) ? kwargs[:fillalpha] : (cur_alpha/2),
+      "color" => cur_color,
+      "width" => 0,
+      "thickness" => 2
+    )
+  end
+
+  cur_label = nothing
+  haskey(kwargs, :name) && ( cur_label = kwargs[:name] )
+  haskey(kwargs, :label) && ( cur_label = kwargs[:label] )
+
+  if !isnothing(cur_label)
+    if strip(cur_label) == ""
+      cur_dict["showlegend"] = false
+    else
+      cur_dict["name"] = cur_label
+    end
+  end
 
   sub_dict = Dict()
   sub_dict["color"] = cur_color
