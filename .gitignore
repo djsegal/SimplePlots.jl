@@ -26,3 +26,6 @@ Manifest.toml
 # Add files from PkgTemplates
 .DS_Store
 /dev/
+
+# Jupyter files
+*-checkpoint.ipynb
