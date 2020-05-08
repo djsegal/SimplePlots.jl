@@ -1,6 +1,8 @@
 macro demo(expr)
+  demo_gui = Base.eval(__module__, :(SimplePlots.@_gui($(Expr(:for,esc.(expr.args)...)))))
+
   quote
-    cur_gui = @_gui $(expr)
+    cur_gui = $(demo_gui)
 
     plot_tree = build_tree(
       compile_tree_dict(cur_gui.expression, cur_gui.widgets)
@@ -10,7 +12,7 @@ macro demo(expr)
       isa(cur_node, TreeNode) && continue
 
       SimplePlot()
-      cur_output = Base.eval(@__MODULE__, cur_node.value)
+      cur_output = Base.eval($(__module__), cur_node.value)
       shown_plot = isa(cur_output, SimplePlot) ? cur_output : _plot
 
       cur_node.value = custom_json(shown_plot)

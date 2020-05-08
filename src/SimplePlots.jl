@@ -24,5 +24,6 @@ module SimplePlots
   include("interact/index.jl")
 
   include("init.jl")
+  include("strip_escape.jl")
 
 end
