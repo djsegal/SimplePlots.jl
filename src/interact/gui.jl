@@ -416,6 +416,6 @@ macro _gui(expr)
 
 end
 
-@eval const $(Symbol("@manipulate")) = $(Symbol("@gui"))
+var"@manipulate" = var"@gui"
 
 export @gui, @manipulate

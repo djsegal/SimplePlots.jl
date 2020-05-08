@@ -1,5 +1,5 @@
 ### SimplePlots.jl
-##### Plots made Simple
+##### Plots in 5 seconds or your money back
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://djsegal.github.io/SimplePlots.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://djsegal.github.io/SimplePlots.jl/dev)
