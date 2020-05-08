@@ -132,22 +132,22 @@ macro _gui(expr)
         });
 
         \$("#$(work_id)").parent().children("ul").children("li").click(function (curEvent) {
-          newValue = curEvent.target.innerText;
+          var newValue = curEvent.target.innerText;
           \$(curEvent.target).closest(".cs-dropdown").children("label").text(newValue);
 
-          tmpRange = $( json(strip.(string.(cur_widget.range))) );
-          tmpIndex = tmpRange.indexOf(newValue);
+          var tmpRange = $( json(strip.(string.(cur_widget.range))) );
+          var tmpIndex = tmpRange.indexOf(newValue);
 
           if ( tmpIndex < 0 ) { alert("Unable to find dropdown label!"); }
           tmpRange.splice(tmpIndex, 1);
 
-          curItems = \$(curEvent.target).closest(".cs-dropdown").children("ul").children("li");
+          var curItems = \$(curEvent.target).closest(".cs-dropdown").children("ul").children("li");
 
           \$.each(curItems, function(workIndex, workValue) {
             workValue.innerText = tmpRange[workIndex];
           });
 
-          tmpSpan = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
+          var tmpSpan = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
           tmpSpan.innerText = newValue;
 
           \$("#js-interact__$( string(cur_id) )").trigger("interact");
@@ -200,10 +200,10 @@ macro _gui(expr)
 
         var that = this;
         this.noUiSlider.on('update', function (values, handle) {
-          tmpRange = $( map(string,cur_widget.range) );
-          newValue = tmpRange[values[handle]];
+          var tmpRange = $( map(string,cur_widget.range) );
+          var newValue = tmpRange[values[handle]];
 
-          tmpSpan = \$(that.parentElement).children(".js-widget-value")[0];
+          var tmpSpan = \$(that.parentElement).children(".js-widget-value")[0];
           tmpSpan.innerText = newValue;
 
           \$("#js-interact__$( string(cur_id) )").trigger("interact");
@@ -214,27 +214,27 @@ macro _gui(expr)
   end
 
   cur_script *= """
-      \$(".js-widget-toggle .cs-button").click(function (curEvent) {
-        if ( !\$(curEvent.target).hasClass("cs-active") ) {
-          var curItems = \$(curEvent.target.parentElement).children(".cs-button");
-          var curIndex = curItems.index(curEvent.target);
+    \$(".js-widget-toggle .cs-button").click(function (curEvent) {
+      if ( !\$(curEvent.target).hasClass("cs-active") ) {
+        var curItems = \$(curEvent.target.parentElement).children(".cs-button");
+        var curIndex = curItems.index(curEvent.target);
 
-          \$.each(curItems, function(workIndex, workValue) {
-            var otherTarget = \$(curEvent.target.parentElement.children[workIndex]);
+        \$.each(curItems, function(workIndex, workValue) {
+          var otherTarget = \$(curEvent.target.parentElement.children[workIndex]);
 
-            otherTarget.removeClass("cs-active");
-            otherTarget.removeClass("cs-pre-active");
+          otherTarget.removeClass("cs-active");
+          otherTarget.removeClass("cs-pre-active");
 
-            if ( workIndex == curIndex ) { otherTarget.addClass("cs-active"); }
-            if ( workIndex == curIndex - 1 ) { otherTarget.addClass("cs-pre-active"); }
-          });
+          if ( workIndex == curIndex ) { otherTarget.addClass("cs-active"); }
+          if ( workIndex == curIndex - 1 ) { otherTarget.addClass("cs-pre-active"); }
+        });
 
-          var curWidgetVal = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
-          curWidgetVal.innerText = curEvent.target.innerText;
+        var curWidgetVal = \$(curEvent.target).closest(".js-widget").children(".js-widget-value")[0];
+        curWidgetVal.innerText = curEvent.target.innerText;
 
-          \$("#js-interact__$( string(cur_id) )").trigger("interact");
-        }
-      });
+        \$("#js-interact__$( string(cur_id) )").trigger("interact");
+      }
+    });
   """
 
   comm_id = "interact-$( string(cur_id) )"
