@@ -48,6 +48,20 @@ function _init_notebook()
 
       interactComms = {};
 
+      function customPlotlyReact(curPlot, curData, curLayout, curConfig) {
+        for (var i = 0; i < curData.length; i++) {
+          curData[i]["visible"] = true;
+          for (var j = 0; j < curPlot.data.length; j++) {
+            if ( curData[i].name !== curPlot.data[j].name ) { continue; }
+            if ( curPlot.data[j].visible !== "legendonly" ) { continue; }
+
+            curData[i]["visible"] = "legendonly";
+          }
+        }
+
+        Plotly.react(curPlot, curData, curLayout, curConfig);
+      }
+
       function customPlotLoader(curCallback) {
         if ( \$(".js-nouislider-css").length == 0 ) {
           \$("head").append(
