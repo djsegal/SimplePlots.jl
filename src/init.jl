@@ -27,6 +27,8 @@ function __init__()
   global _palette = work_palette
   global default_plot_size = work_size
 
+  global interact_comms = Dict{AbstractString, Observable}()
+
   SimplePlot() # sets global _plots variable
 
   if is_repl
@@ -44,9 +46,10 @@ function _init_notebook()
 
   plotly_javascript = """
     <script type="text/javascript" class="js-plotly-script">
-      \$(".js-plotly-script").parent().css('padding', 0);
+      globalComms = {};
+      demoData = {};
 
-      interactComms = {};
+      \$(".js-plotly-script").parent().css('padding', 0);
 
       function customPlotlyReact(curPlot, curData, curLayout, curConfig) {
         for (var i = 0; i < curData.length; i++) {
@@ -119,4 +122,5 @@ function _init_notebook()
   """
 
   display(HTML(plotly_javascript))
+
 end
