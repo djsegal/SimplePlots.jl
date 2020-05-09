@@ -80,5 +80,5 @@ function _line!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
     push!(simple_plot.layout["shapes"], cur_dict)
   end
 
-  simple_plot
+  validate!(simple_plot)
 end

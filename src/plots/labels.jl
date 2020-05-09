@@ -1,16 +1,16 @@
 function title!(simple_plot::SimplePlot, cur_string::AbstractString)
   simple_plot.layout["title"] = cur_string
-  simple_plot
+  validate!(simple_plot)
 end
 
 function xlabel!(simple_plot::SimplePlot, cur_string::AbstractString)
   simple_plot.layout["xaxis"]["title"] = cur_string
-  simple_plot
+  validate!(simple_plot)
 end
 
 function ylabel!(simple_plot::SimplePlot, cur_string::AbstractString)
   simple_plot.layout["yaxis"]["title"] = cur_string
-  simple_plot
+  validate!(simple_plot)
 end
 
 title!(cur_string::AbstractString) = title!(_plot, cur_string)

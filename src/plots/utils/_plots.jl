@@ -177,5 +177,5 @@ function _plot!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
 
   push!(simple_plot.data, cur_dict)
 
-  simple_plot
+  validate!(simple_plot)
 end

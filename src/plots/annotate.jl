@@ -19,7 +19,7 @@ function annotate!(simple_plot::SimplePlot, x_position::Number, y_position::Numb
     )
   )
 
-  simple_plot
+  validate!(simple_plot)
 end
 
 function annotate!(x_position::Number, y_position::Number, cur_text::PlotText)
