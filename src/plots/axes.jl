@@ -1,17 +1,33 @@
 function xscale!(simple_plot::SimplePlot, cur_symbol::Symbol)
   ( cur_symbol == :log10 ) && ( cur_symbol = :log )
+  ( cur_symbol == :lin ) && ( cur_symbol = :linear )
+  ( cur_symbol == :identity ) && ( cur_symbol = :linear )
 
-  simple_plot.layout["xaxis"]["exponentformat"] = "power"
+  @assert cur_symbol in [:linear, :log]
   simple_plot.layout["xaxis"]["type"] = string(cur_symbol)
+
+  if cur_symbol == :linear
+    delete!(simple_plot.layout["xaxis"], "exponentformat")
+  else
+    simple_plot.layout["xaxis"]["exponentformat"] = "power"
+  end
 
   validate!(simple_plot)
 end
 
 function yscale!(simple_plot::SimplePlot, cur_symbol::Symbol)
   ( cur_symbol == :log10 ) && ( cur_symbol = :log )
+  ( cur_symbol == :lin ) && ( cur_symbol = :linear )
+  ( cur_symbol == :identity ) && ( cur_symbol = :linear )
 
-  simple_plot.layout["yaxis"]["exponentformat"] = "power"
+  @assert cur_symbol in [:linear, :log]
   simple_plot.layout["yaxis"]["type"] = string(cur_symbol)
+
+  if cur_symbol == :linear
+    delete!(simple_plot.layout["yaxis"], "exponentformat")
+  else
+    simple_plot.layout["yaxis"]["exponentformat"] = "power"
+  end
 
   validate!(simple_plot)
 end
