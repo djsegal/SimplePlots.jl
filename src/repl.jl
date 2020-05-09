@@ -188,6 +188,10 @@ function _configure_repl_layout(cur_size, cur_data, work_layout)
     cur_ylabel = ""
   end
 
+  # unicode plots has no concept of ticks
+  delete!(work_layout["xaxis"], "tickvals")
+  delete!(work_layout["yaxis"], "tickvals")
+
   @assert isempty(work_layout["xaxis"])
   @assert isempty(work_layout["yaxis"])
 
