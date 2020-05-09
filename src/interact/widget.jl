@@ -40,8 +40,13 @@ function widget(input_range; value=nothing, label::AbstractString="", type::Abst
     cur_index = all_indices[1]
   end
 
-  Widget(cur_range, cur_index, label, type, datatype)
+  cur_widget = Widget(cur_range, cur_index, label, type, datatype)
+  observe!(cur_widget)
+
+  cur_widget
 end
+
+get_value(cur_widget::Widget) = cur_widget.range[cur_widget.index]
 
 slider = widget
 

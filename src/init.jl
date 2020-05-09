@@ -28,6 +28,7 @@ function __init__()
   global default_plot_size = work_size
 
   global interact_comms = Dict{AbstractString, Observable}()
+  empty!(widget_observers)
 
   SimplePlot() # sets global _plots variable
 

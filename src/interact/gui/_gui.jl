@@ -10,6 +10,8 @@ macro _gui(expr)
     cur_bindings = [cur_bindings]
   end
 
+  cur_symbols = map(x -> first(x.args), cur_bindings)
+
   gui_id = UUIDs.uuid4()
   gui_widgets = map(make_gui_widget, cur_bindings)
 
@@ -29,6 +31,8 @@ macro _gui(expr)
     comm_observer = Observable(0)
     comm_id = "interact-$( string(cur_id) )"
 
+    active_listener = $(esc(make_gui_block(cur_block, cur_symbols)))
+
     cur_watcher = on(comm_observer) do cur_value
 
       cur_comm = Comm(Symbol(comm_id))
@@ -39,11 +43,29 @@ macro _gui(expr)
 
         SimplePlot()
 
-        cur_output = $(__module__).eval(
-          make_gui_expression($(cur_gui), message_data)
-        )
+        for (cur_key, cur_value) in message_data
+          ( cur_key == "___interact_plot_id___" ) && continue
 
-        shown_plot = isa(cur_output, SimplePlot) ? cur_output : _plot
+          cur_widget = cur_widgets[findfirst(tmp_widget -> tmp_widget.label == cur_key, cur_widgets)]
+
+          if cur_widget.datatype <: AbstractString
+            parsed_value = cur_value
+          elseif cur_widget.datatype == Char
+            if isa(cur_value, Char)
+              parsed_value = cur_value
+            else
+              @assert isa(cur_value, AbstractString)
+              @assert length(cur_value) == 1
+              parsed_value = cur_value[1]
+            end
+          else
+            parsed_value = parse(cur_widget.datatype, cur_value)
+          end
+
+          observe!(cur_widget, parsed_value)
+        end
+
+        shown_plot = isa(active_listener[], SimplePlot) ? active_listener[] : _plot
 
         if "___interact_plot_id___" in keys(message_data)
           plot_json = custom_json(shown_plot)
