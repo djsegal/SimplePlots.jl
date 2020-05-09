@@ -4,7 +4,7 @@ function xticks!(simple_plot::SimplePlot, cur_ticks)
   end
 
   simple_plot.xticks = cur_ticks
-  deepcopy(simple_plot)
+  simple_plot
 end
 
 function yticks!(simple_plot::SimplePlot, cur_ticks)
@@ -13,7 +13,7 @@ function yticks!(simple_plot::SimplePlot, cur_ticks)
   end
 
   simple_plot.yticks = cur_ticks
-  deepcopy(simple_plot)
+  simple_plot
 end
 
 xticks!(cur_ticks) = xticks!(_plot, cur_ticks)

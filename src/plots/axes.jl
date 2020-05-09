@@ -1,8 +1,10 @@
 function xscale!(simple_plot::SimplePlot, cur_symbol::Symbol)
   ( cur_symbol == :log10 ) && ( cur_symbol = :log )
+
   simple_plot.layout["xaxis"]["exponentformat"] = "power"
   simple_plot.layout["xaxis"]["type"] = string(cur_symbol)
-  deepcopy(simple_plot)
+
+  simple_plot
 end
 
 function yscale!(simple_plot::SimplePlot, cur_symbol::Symbol)
@@ -10,7 +12,8 @@ function yscale!(simple_plot::SimplePlot, cur_symbol::Symbol)
 
   simple_plot.layout["yaxis"]["exponentformat"] = "power"
   simple_plot.layout["yaxis"]["type"] = string(cur_symbol)
-  deepcopy(simple_plot)
+
+  simple_plot
 end
 
 function xlims!(simple_plot::SimplePlot, varargs...)
@@ -26,7 +29,7 @@ function xlims!(simple_plot::SimplePlot, varargs...)
   simple_plot.layout["xaxis"]["autorange"] = false
   simple_plot.xlims = cur_lims
 
-  deepcopy(simple_plot)
+  simple_plot
 end
 
 function ylims!(simple_plot::SimplePlot, varargs...)
@@ -42,7 +45,7 @@ function ylims!(simple_plot::SimplePlot, varargs...)
   simple_plot.layout["yaxis"]["autorange"] = false
   simple_plot.ylims = cur_lims
 
-  deepcopy(simple_plot)
+  simple_plot
 end
 
 xscale!(cur_symbol::Symbol) = xscale!(_plot, cur_symbol)

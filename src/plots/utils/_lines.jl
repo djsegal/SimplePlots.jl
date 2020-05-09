@@ -80,5 +80,5 @@ function _line!(simple_plot::SimplePlot, cur_mode::AbstractString, varargs...; k
     push!(simple_plot.layout["shapes"], cur_dict)
   end
 
-  deepcopy(simple_plot)
+  simple_plot
 end
