@@ -1,5 +1,7 @@
 function xticks!(simple_plot::SimplePlot, cur_ticks)
-  if !isa(cur_ticks, Tuple)
+  if isa(cur_ticks, Tuple)
+    cur_ticks = collect.(cur_ticks)
+  else
     cur_ticks = tuple(collect(cur_ticks))
   end
 
@@ -8,7 +10,9 @@ function xticks!(simple_plot::SimplePlot, cur_ticks)
 end
 
 function yticks!(simple_plot::SimplePlot, cur_ticks)
-  if !isa(cur_ticks, Tuple)
+  if isa(cur_ticks, Tuple)
+    cur_ticks = collect.(cur_ticks)
+  else
     cur_ticks = tuple(collect(cur_ticks))
   end
 
