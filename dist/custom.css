@@ -150,6 +150,11 @@
   padding-right: 1.5rem;
 }
 
+.cs-dropdown ul {
+  max-height: 40vh;
+  overflow-y: scroll;
+}
+
 .cs-dropdown label:hover, .cs-dropdown ul li:hover {
   cursor: pointer;
 }
