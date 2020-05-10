@@ -6,7 +6,7 @@ function render_unicode(cur_size, cur_data, cur_layout, cur_config)
 
   work_layout = deepcopy(cur_layout)
 
-  cur_plot, has_legend, is_linear_x, is_linear_y = (
+  cur_plot, has_legend, is_linear_x, is_linear_y, max_label_length = (
     _configure_repl_layout(cur_size, cur_data, work_layout)
   )
 
@@ -67,6 +67,9 @@ function render_unicode(cur_size, cur_data, cur_layout, cur_config)
     )
 
     delete!(work_datum[singular_mode], "color")
+    delete!(work_datum[singular_mode], "width")
+    delete!(work_datum[singular_mode], "size")
+
     @assert isempty(work_datum[singular_mode])
     delete!(work_datum, singular_mode)
 
@@ -283,6 +286,6 @@ function _configure_repl_layout(cur_size, cur_data, work_layout)
   _annotate!(:bl, _clean_string(min_x))
   _annotate!(:br, _clean_string(max_x))
 
-  return (cur_plot, has_legend, is_linear_x, is_linear_y)
+  return (cur_plot, has_legend, is_linear_x, is_linear_y, max_label_length)
 
 end
