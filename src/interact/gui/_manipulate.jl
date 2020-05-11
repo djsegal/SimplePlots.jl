@@ -1,4 +1,4 @@
-macro _manipulate(expr, is_gui=false)
+function _manipulate_outer(expr, is_gui)
   @assert expr.head == :for
 
   cur_block = strip_escape!(expr.args[2])
@@ -17,88 +17,78 @@ macro _manipulate(expr, is_gui=false)
   cur_symbols = map(x -> first(x.args), cur_bindings)
 
   gui_id = UUIDs.uuid4()
-  gui_widgets = map(make_gui_widget, cur_bindings)
+  quote_widgets = map(make_gui_widget, cur_bindings)
 
-  cur_gui = GUI(gui_id, Widget[], strip_escape!(cur_block))
+  return quote_widgets, cur_block, cur_bindings, cur_symbols
+end
 
-  expr_post = Dict{UUID,Expr}()
+function _manipulate_inner(cur_widgets, cur_listener, is_gui)
+  cur_id = UUIDs.uuid4()
 
-  return quote
+  make_gui_html(cur_id, cur_widgets)
 
-    cur_id = $(gui_id)
+  comm_observer = Observable(0)
+  comm_id = "interact-$( string(cur_id) )"
 
-    cur_widgets = make_gui_list($(gui_widgets...))
-    append!($(cur_gui.widgets), cur_widgets)
+  cur_watcher = on(comm_observer) do cur_value
 
-    make_gui_html(cur_id, cur_widgets)
+    cur_comm = Comm(Symbol(comm_id))
 
-    comm_observer = Observable(0)
-    comm_id = "interact-$( string(cur_id) )"
+    cur_comm.on_msg = function (cur_message)
 
-    active_listener = $(esc(make_gui_block(cur_block, cur_symbols)))
+      message_data = cur_message.content["data"]
 
-    cur_watcher = on(comm_observer) do cur_value
+      for (cur_key, cur_value) in message_data
+        ( cur_key == "___interact_plot_id___" ) && continue
 
-      cur_comm = Comm(Symbol(comm_id))
+        cur_widget = cur_widgets[findfirst(tmp_widget -> tmp_widget.label == cur_key, cur_widgets)]
 
-      cur_comm.on_msg = function (cur_message)
-
-        message_data = cur_message.content["data"]
-
-
-        for (cur_key, cur_value) in message_data
-          ( cur_key == "___interact_plot_id___" ) && continue
-
-          cur_widget = cur_widgets[findfirst(tmp_widget -> tmp_widget.label == cur_key, cur_widgets)]
-
-          if cur_widget.datatype <: AbstractString
+        if cur_widget.datatype <: AbstractString
+          parsed_value = cur_value
+        elseif cur_widget.datatype == Char
+          if isa(cur_value, Char)
             parsed_value = cur_value
-          elseif cur_widget.datatype == Char
-            if isa(cur_value, Char)
-              parsed_value = cur_value
-            else
-              @assert isa(cur_value, AbstractString)
-              @assert length(cur_value) == 1
-              parsed_value = cur_value[1]
-            end
           else
-            parsed_value = parse(cur_widget.datatype, cur_value)
+            @assert isa(cur_value, AbstractString)
+            @assert length(cur_value) == 1
+            parsed_value = cur_value[1]
           end
-
-          observe!(cur_widget, parsed_value)
-        end
-
-        if isa(active_listener[], AbstractPlot)
-          shown_plot = active_listener[]
         else
-          $(is_gui) || return
-          shown_plot = _plot
+          parsed_value = parse(cur_widget.datatype, cur_value)
         end
 
+        observe!(cur_widget, parsed_value)
+      end
 
-        if "___interact_plot_id___" in keys(message_data)
-          plot_json = custom_json(shown_plot)
-          cur_size, cur_data, cur_layout, cur_config = _show_helper(shown_plot)
+      if isa(cur_listener[], AbstractPlot)
+        shown_plot = cur_listener[]
+      else
+        is_gui || return
+        shown_plot = _plot
+      end
 
-          # cur_size is currently unused in update call
+      if "___interact_plot_id___" in keys(message_data)
+        plot_json = custom_json(shown_plot)
+        cur_size, cur_data, cur_layout, cur_config = _show_helper(shown_plot)
 
-          plot_script = _render_html_script(
-            message_data["___interact_plot_id___"], cur_data, cur_layout, cur_config
-          )
+        # cur_size is currently unused in update call
 
-          send_comm(cur_comm, Dict("json" => Dict("plot" => plot_json, "script" => plot_script)))
-        else
-          plot_html = _show(shown_plot).content
-          send_comm(cur_comm, Dict("html" => plot_html))
-        end
+        plot_script = _render_html_script(
+          message_data["___interact_plot_id___"], cur_data, cur_layout, cur_config
+        )
 
+        send_comm(cur_comm, Dict("json" => Dict("plot" => plot_json, "script" => plot_script)))
+      else
+        plot_html = _show(shown_plot).content
+        send_comm(cur_comm, Dict("html" => plot_html))
       end
 
     end
 
-    $(interact_comms)[comm_id] = comm_observer
-    $(make_gui_bootloader)(Main, cur_id)
-
-    $(cur_gui)
   end
+
+  interact_comms[comm_id] = comm_observer
+  make_gui_bootloader(Main, cur_id)
+
+  cur_id
 end
