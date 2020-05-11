@@ -5,4 +5,4 @@ include("make_gui_bootloader.jl")
 
 make_gui_list(cur_widgets::Widget...) = [cur_widgets...]
 
-include("_gui.jl")
+include("_manipulate.jl")

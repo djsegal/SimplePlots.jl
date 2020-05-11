@@ -1,8 +1,12 @@
-macro _gui(expr)
+macro _manipulate(expr, is_gui=false)
   @assert expr.head == :for
 
   cur_block = strip_escape!(expr.args[2])
   cur_bindings = strip_escape!(expr.args[1])
+
+  is_gui && insert!(
+    cur_block.args, 2, :( SimplePlots.SimplePlot() )
+  )
 
   if cur_bindings.head == :block
     cur_bindings = cur_bindings.args
@@ -41,7 +45,6 @@ macro _gui(expr)
 
         message_data = cur_message.content["data"]
 
-        SimplePlot()
 
         for (cur_key, cur_value) in message_data
           ( cur_key == "___interact_plot_id___" ) && continue
@@ -65,7 +68,13 @@ macro _gui(expr)
           observe!(cur_widget, parsed_value)
         end
 
-        shown_plot = isa(active_listener[], SimplePlot) ? active_listener[] : _plot
+        if isa(active_listener[], AbstractPlot)
+          shown_plot = active_listener[]
+        else
+          $(is_gui) || return
+          shown_plot = _plot
+        end
+
 
         if "___interact_plot_id___" in keys(message_data)
           plot_json = custom_json(shown_plot)

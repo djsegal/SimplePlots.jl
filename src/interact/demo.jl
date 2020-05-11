@@ -1,5 +1,5 @@
 macro demo(expr)
-  demo_gui = Base.eval(__module__, :(SimplePlots.@_gui($(Expr(:for,esc.(expr.args)...)))))
+  demo_gui = Base.eval(__module__, :(SimplePlots.@_manipulate($(Expr(:for,esc.(expr.args)...)),true)))
 
   quote
     cur_gui = $(demo_gui)

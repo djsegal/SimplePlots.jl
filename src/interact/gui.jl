@@ -12,10 +12,20 @@ macro gui(expr)
     )
   end
 
-  Base.eval(__module__, :(SimplePlots.@_gui($(Expr(:for,esc.(expr.args)...)))))
+  Base.eval(__module__, :(SimplePlots.@_manipulate($(Expr(:for,esc.(expr.args)...)),true)))
   nothing
 end
 
-var"@manipulate" = var"@gui"
+macro manipulate(expr)
+  if expr.head != :for
+    error(
+      "@manipulate syntax is @manipulate for ",
+      " [<variable>=<domain>,]... <expression> end"
+    )
+  end
+
+  Base.eval(__module__, :(SimplePlots.@_manipulate($(Expr(:for,esc.(expr.args)...)),false)))
+  nothing
+end
 
 export @gui, @manipulate
