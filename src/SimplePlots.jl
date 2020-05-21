@@ -9,6 +9,8 @@ module SimplePlots
   using IJulia.CommManager
   using Observables
 
+  using IJulia
+
   abstract type AbstractPlot end
 
   include("simple_plot.jl")

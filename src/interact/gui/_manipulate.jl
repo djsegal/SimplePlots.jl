@@ -30,7 +30,11 @@ function _manipulate_inner(cur_widgets, cur_listener, is_gui)
   comm_observer = Observable(0)
   comm_id = "interact-$( string(cur_id) )"
 
+  parent_message = IJulia.execute_msg
+
   cur_watcher = on(comm_observer) do cur_value
+
+    IJulia.set_cur_msg(parent_message)
 
     cur_comm = Comm(Symbol(comm_id))
 
