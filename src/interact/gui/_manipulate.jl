@@ -67,6 +67,14 @@ function _manipulate_inner(cur_widgets, cur_listener, is_gui)
       if isa(cur_listener[], AbstractPlot)
         shown_plot = cur_listener[]
       else
+        if !isnothing(cur_listener[])
+          if isa(cur_listener[], AbstractString) || isa(cur_listener[], Number)
+            println(cur_listener[])
+          else
+            display(cur_listener[])
+          end
+        end
+
         is_gui || return
         shown_plot = _plot
       end
