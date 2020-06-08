@@ -49,5 +49,6 @@ end
 get_value(cur_widget::Widget) = cur_widget.range[cur_widget.index]
 
 slider = widget
+dropdown = widget
 
-export slider
+export slider, dropdown
