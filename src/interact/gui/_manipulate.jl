@@ -49,6 +49,8 @@ function _manipulate_inner(cur_widgets, cur_listener, is_gui)
 
         if cur_widget.datatype <: AbstractString
           parsed_value = cur_value
+        elseif cur_widget.datatype <: Symbol
+          parsed_value = Symbol(cur_value)
         elseif cur_widget.datatype == Char
           if isa(cur_value, Char)
             parsed_value = cur_value
