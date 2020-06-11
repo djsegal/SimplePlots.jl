@@ -68,9 +68,15 @@ function compile_tree_dict(cur_block, cur_widgets, cur_dict=OrderedDict())
     tmp_block = deepcopy(cur_block)
     parsed_value = cur_value
 
-    work_block = :(
-      $(cur_symbol) = $( parsed_value )
-    )
+    if tmp_widget.datatype == Symbol
+      work_block = :(
+        $(cur_symbol) = Symbol($(string(parsed_value)))
+      )
+    else
+      work_block = :(
+        $(cur_symbol) = $( parsed_value )
+      )
+    end
 
     insert!(tmp_block.args, 2, work_block)
     sub_dict[cur_value] = compile_tree_dict(tmp_block, tmp_widgets, cur_dict)
