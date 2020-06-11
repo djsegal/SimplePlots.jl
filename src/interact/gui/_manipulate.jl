@@ -40,6 +40,8 @@ function _manipulate_inner(cur_widgets, cur_listener, is_gui)
 
     cur_comm.on_msg = function (cur_message)
 
+      IJulia.set_cur_msg(parent_message)
+
       message_data = cur_message.content["data"]
 
       for (cur_key, cur_value) in message_data
